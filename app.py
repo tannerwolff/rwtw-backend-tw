@@ -2,21 +2,36 @@ from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from flask_heroku import Heroku
+import os
+DB_URI = os.getenv("DB_URI")
+ADMIN_NAME = os.getenv("ADMIN_NAME")
+ADMIN_EMAIL = os.getenv("ADMIN_EMAIL")
+ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")
 
 app = Flask(__name__)
 CORS(app)
-app.config['SQLALCHEMY_DATABASE_URI']='postgres://lxqdmdrbsnxzrh:7a103b10854944a597e55d2bbe9e639869dd38f47f4bfcc9f530d6d2b6dd44dd@ec2-34-225-82-212.compute-1.amazonaws.com:5432/d7u3fc26h5icob'
+app.config['SQLALCHEMY_DATABASE_URI']= DB_URI
 
 heroku = Heroku(app)
 db = SQLAlchemy(app)
 
+
+class Admin(db.Model):
+    __tablename__ = 'admins'
+    id = db.Column(db.Integer, primary_key = True)
+    name = ADMIN_NAME
+    email = ADMIN_EMAIL
+    password = ADMIN_PASSWORD
+
+
 class Blog(db.Model):
     __tablename__ = 'posts'
     id = db.Column(db.Integer, primary_key = True)
-    title = db.Column(db.String(120))
-    blog_status = db.Column(db.String(10))
-    content = db.Column(db.String)
-    featured_image_url = db.Column(db.String)
+    title = db.Column(db.String(120), nullable=False)
+    blog_status = db.Column(db.String(10), nullable=False)
+    content = db.Column(db.String, nullable=False)
+    featured_image_url = db.Column(db.String, nullable=False)
+
 
     def __init__(self, title, blog_status, content, featured_image_url):
         self.title = title

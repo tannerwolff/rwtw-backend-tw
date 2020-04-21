@@ -12,6 +12,7 @@ flask-heroku = "*"
 flask-cors = "*"
 psycopg2 = "*"
 flask-sqlalchemy = "*"
+python-dotenv = "*"
 
 [requires]
 python_version = "3.8"
