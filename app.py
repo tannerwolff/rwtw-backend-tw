@@ -3,10 +3,10 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from flask_heroku import Heroku
 import os
-DB_URI = os.getenv("DB_URI")
-ADMIN_NAME = os.getenv("ADMIN_NAME")
-ADMIN_EMAIL = os.getenv("ADMIN_EMAIL")
-ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")
+DB_URI = os.environ.get("DB_URI")
+ADMIN_NAME = os.environ.get("ADMIN_NAME")
+ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD")
 
 app = Flask(__name__)
 CORS(app)
