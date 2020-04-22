@@ -15,6 +15,13 @@ app.config['SQLALCHEMY_DATABASE_URI']= DB_URI
 heroku = Heroku(app)
 db = SQLAlchemy(app)
 
+@app.route('/auth', methods=['POST'])
+def sign_in():
+    if email == ADMIN_EMAIL and password == ADMIN_PASSWORD:
+        return('LOGGED_IN')
+    else:
+        return("NOT_LOGGED_IN")
+
 
 class Admin(db.Model):
     __tablename__ = 'admins'
