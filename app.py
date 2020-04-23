@@ -21,17 +21,10 @@ def sign_in():
     ad_email = post_data.get('ad_email')
     ad_password = post_data.get('ad_password')
     if ad_email == ADMIN_EMAIL and ad_password == ADMIN_PASSWORD:
-        return('LOGGED_IN')
+        return(jsonify('LOGGED_IN'))
     else:
-        return("NOT_LOGGED_IN")
+        return(jsonify('NOT_LOGGED_IN'))
 
-
-class Admin(db.Model):
-    __tablename__ = 'admins'
-    id = db.Column(db.Integer, primary_key = True)
-    name = ADMIN_NAME
-    email = ADMIN_EMAIL
-    password = ADMIN_PASSWORD
 
 
 class Blog(db.Model):
