@@ -17,7 +17,10 @@ db = SQLAlchemy(app)
 
 @app.route('/auth', methods=['POST'])
 def sign_in():
-    if email == ADMIN_EMAIL and password == ADMIN_PASSWORD:
+    post_data = request.get_json()
+    ad_email = post_data.get('ad_email')
+    ad_password = post_data.get('ad_password')
+    if ad_email == ADMIN_EMAIL and ad_password == ADMIN_PASSWORD:
         return('LOGGED_IN')
     else:
         return("NOT_LOGGED_IN")
