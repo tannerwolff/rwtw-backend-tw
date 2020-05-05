@@ -1,19 +1,76 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, session
+from flask_mail import Mail, Message
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from flask_heroku import Heroku
+
 import os
+
 DB_URI = os.environ.get("DB_URI")
 ADMIN_NAME = os.environ.get("ADMIN_NAME")
 ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL")
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD")
 
+mail_password = os.environ.get("mail_password")
+mail_username = os.environ.get("mail_username")
+
 app = Flask(__name__)
 CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI']= DB_URI
 
+app.config.update(
+    MAIL_SERVER = 'smtp.gmail.com',
+    MAIL_PORT = 465, #587
+    MAIL_USE_SSL = True, #TLS
+    MAIL_USERNAME = mail_username,
+    MAIL_PASSWORD = mail_password,
+    MAIL_DEFAULT_SENDER="test@test.com"
+)
+
 heroku = Heroku(app)
 db = SQLAlchemy(app)
+mail=Mail(app)
+
+@app.route('/email', methods=['POST'])
+def index():
+    if request.content_type == 'application/json':
+        get_data = request.get_json()
+        name = get_data.get('name')
+        sender = get_data.get('email')
+        recipients = ['tawolff12345@gmail.com']
+        headers = [name, sender] + recipients
+        subject = get_data.get('subject')
+        message = get_data.get('message')
+        body = message + '\n\n' + name
+        msg = Message(subject, headers, body)
+        print(Message)
+        mail.send(msg)
+    return jsonify('Message has been sent')
+
+class Emails(db.Model):
+    __tablename__ = 'emails'
+    id = db.Column(db.Integer, primary_key = True)
+    sub_email = db.Column(db.String(120), nullable=False, unique=True )
+    
+
+
+    def __init__(self, sub_email):
+        self.sub_email = sub_email
+
+    def __repr__(self):
+        return f"title {self.sub_email}"
+
+
+@app.route('/email/sub', methods=["POST"])
+def sub_email_input():
+    if request.content_type == 'application/json':
+        post_data = request.get_json()
+        sub_email = post_data.get('sub_email')
+        reg = Emails(sub_email)
+        db.session.add(reg)
+        db.session.commit()
+        return jsonify('Sub Email Posted')
+    return jsonify('Something went terribly wrong')
 
 @app.route('/auth', methods=['POST'])
 def sign_in():
@@ -33,7 +90,7 @@ class Blog(db.Model):
     title = db.Column(db.String(120), nullable=False)
     blog_status = db.Column(db.String(10), nullable=False)
     content = db.Column(db.String, nullable=False)
-    featured_image_url = db.Column(db.String, nullable=False)
+    featured_image_url = db.Column(db.String)
 
 
     def __init__(self, title, blog_status, content, featured_image_url):
@@ -47,7 +104,10 @@ class Blog(db.Model):
 
 @app.route("/")
 def home():
+    print(ADMIN_EMAIL, ADMIN_PASSWORD)
     return"<h1>Hi from flask </h1>"
+
+
 
 @app.route('/blog/input', methods=["POST"])
 def blogs_input():
@@ -102,5 +162,3 @@ def blog_update(id):
 if __name__ == "__main__":
     app.debug = True
     app.run()
-
-    
