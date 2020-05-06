@@ -37,7 +37,7 @@ def index():
         get_data = request.get_json()
         name = get_data.get('name')
         sender = get_data.get('email')
-        recipients = ['tawolff12345@gmail.com']
+        recipients = [mail_username]
         headers = [name, sender] + recipients
         subject = get_data.get('subject')
         message = get_data.get('message')
@@ -81,6 +81,12 @@ def sign_in():
         return(jsonify('LOGGED_IN'))
     else:
         return(jsonify('NOT_LOGGED_IN'))
+
+
+@app.route("/email/subscriptions", methods=['GET'])
+def return_sub_emails():
+    all_emails = db.session.query(Emails.id, Emails.sub_email).all()
+    return jsonify(all_emails)
 
 
 
